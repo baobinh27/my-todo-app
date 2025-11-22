@@ -1,16 +1,27 @@
 import { FaPlusCircle } from "react-icons/fa";
-import type { TodoInfo } from "../types/types";
+import type { TaskInfo } from "../types/types";
 import Card from "./Card";
 import { useState } from "react";
+import LoadingScreen from "./LoadingScreen";
+import { useTaskContext } from "../services/useTaskContext";
 
-type TodoBoardProps = {
-    todoInfos: TodoInfo[],
-    onSelectTask: (index: number) => void,
+type TaskBoardProps = {
+    // taskInfos: TaskInfo[],
+    onSelectTask: (id: number) => void,
     onCreateTask: () => void
 }
 
-const TodoBoard = ({ todoInfos, onSelectTask, onCreateTask }: TodoBoardProps) => {
+const TaskBoard = ({ onSelectTask, onCreateTask }: TaskBoardProps) => {
+    const { getTasks } = useTaskContext();
+
     const [showCompleted, setShowCompleted] = useState(false);
+
+    const tasks = getTasks();
+
+    if (!tasks) {
+        return <LoadingScreen />
+    }
+
 
     return <div className="flex flex-col h-full w-3/4 h-40 overflow-y-scroll">
         <div className="flex flex-row justify-between py-4 px-6">
@@ -32,9 +43,11 @@ const TodoBoard = ({ todoInfos, onSelectTask, onCreateTask }: TodoBoardProps) =>
         </div>
 
         <div className="w-full grid grid-cols-4 auto-rows-min place-items-center gap-x-2 gap-y-10 p-4">
-            {todoInfos.map((todoInfo: TodoInfo, index: number) => {
-                if (!showCompleted && todoInfo.status === 'completed') return null;
-                return <Card id={index} todoInfo={todoInfo} onSelect={() => onSelectTask(index)} />
+            {tasks.map((task: TaskInfo) => {
+                if (!showCompleted && task.status === 'completed') return null;
+                return <Card id={task.id} taskInfo={task} onSelect={() => {
+                    onSelectTask(task.id); console.log(task);
+                }} />
             }
             )}
         </div>
@@ -42,4 +55,4 @@ const TodoBoard = ({ todoInfos, onSelectTask, onCreateTask }: TodoBoardProps) =>
 
 }
 
-export default TodoBoard;
+export default TaskBoard;

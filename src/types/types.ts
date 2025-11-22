@@ -1,4 +1,5 @@
-export type TodoInfo = {
+export type TaskInfo = {
+    id: number,
     title: string,
     description: string,
     createdAt: Date,
